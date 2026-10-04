@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Recipe Finder: search thousands of recipes by name or category, browse meal details with ingredients and instructions, and save your favorites." />
+  <title>Recipe Finder | Discover your next favorite meal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fdf6ee',
+              100: '#fae9d4',
+              200: '#f4d2a5',
+              300: '#ecb473',
+              400: '#e39347',
+              500: '#dd782a',
+              600: '#c36120',
+              700: '#a24a1c',
+              800: '#843c1f',
+              900: '#6c331c',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+            display: ['Fraunces', 'Georgia', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans min-h-screen flex flex-col">
+
+  <!-- ============ HEADER / HERO ============ -->
+  <header class="hero-gradient text-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-12 sm:pt-14 sm:pb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="logo-badge">🍳</span>
+        <span class="text-sm font-semibold tracking-widest uppercase text-brand-100">Recipe Finder</span>
+      </div>
+      <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-semibold leading-tight max-w-2xl">
+        Find your next<br />favorite meal
+      </h1>
+      <p class="mt-4 text-brand-100 text-base sm:text-lg max-w-xl">
+        Search thousands of recipes, browse by category, and save the ones you love. Powered by TheMealDB.
+      </p>
+
+      <!-- Search bar -->
+      <div class="mt-8 max-w-xl relative">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search recipes, e.g. chicken, pasta, chocolate..."
+          autocomplete="off"
+          class="search-input"
+          aria-label="Search recipes"
+        />
+        <button id="clearSearchBtn" class="clear-search hidden" aria-label="Clear search">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 w-full flex-1 -mt-6">
+
+    <!-- View tabs + category pills -->
+    <section class="controls-card">
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <button id="allTab" class="view-tab active" aria-pressed="true">All Recipes</button>
+        <button id="favTab" class="view-tab" aria-pressed="false">
+          ♥ Favorites <span id="favCount" class="fav-count">0</span>
+        </button>
+      </div>
+      <div id="categoryPills" class="flex gap-2 overflow-x-auto pb-1 category-row" role="group" aria-label="Browse by category">
+        <!-- Category pills rendered by app.js -->
+      </div>
+    </section>
+
+    <!-- Status line -->
+    <p id="statusLine" class="text-sm text-stone-500 mt-6 mb-3 h-5" aria-live="polite"></p>
+
+    <!-- Results grid -->
+    <section id="resultsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 pb-4">
+      <!-- Cards rendered by app.js -->
+    </section>
+
+    <!-- Skeleton grid (loading) -->
+    <section id="skeletonGrid" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 pb-4">
+      <!-- Skeleton cards injected by app.js -->
+    </section>
+
+    <!-- Empty / error states -->
+    <div id="emptyState" class="hidden state-panel">
+      <div class="text-6xl mb-4">🍽️</div>
+      <h2 class="text-xl font-semibold mb-2">No recipes found</h2>
+      <p class="text-stone-500 mb-6">Try a different search term, or browse a category above.</p>
+      <button id="resetBtn" class="btn-primary">Show all recipes</button>
+    </div>
+
+    <div id="errorState" class="hidden state-panel">
+      <div class="text-6xl mb-4">⚠️</div>
+      <h2 class="text-xl font-semibold mb-2">Something went wrong</h2>
+      <p class="text-stone-500 mb-6">We could not load recipes. Check your connection and try again.</p>
+      <button id="retryBtn" class="btn-primary">Try again</button>
+    </div>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="border-t border-stone-200 mt-12 py-6 text-center text-sm text-stone-500">
+    <p>Recipe data by <a href="https://www.themealdb.com/api.php" target="_blank" rel="noopener" class="text-brand-600 hover:underline font-medium">TheMealDB</a> · Built with vanilla JavaScript and Tailwind CSS</p>
+  </footer>
+
+  <!-- ============ MEAL DETAIL MODAL ============ -->
+  <div id="modalOverlay" class="hidden modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <button id="modalClose" class="modal-close" aria-label="Close details">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <div id="modalContent">
+        <!-- Detail content rendered by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
